@@ -7,3 +7,9 @@ Wall :: struct {
 	end:         rl.Vector2,
 	invunerable: bool,
 }
+
+draw_walls :: proc() {
+	for wall in game_state.walls {
+		rl.DrawLineV(wall.start, wall.end, rl.RED)
+	}
+}

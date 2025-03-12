@@ -10,7 +10,7 @@ State :: struct {
 	player:         Player,
 	map_width:      i32,
 	map_height:     i32,
-	wall_thickness: i32,
+	wall_thickness: f32,
 	player_speed:   i32,
 	bullets:        [dynamic]Bullet,
 	walls:          [dynamic]Wall,
