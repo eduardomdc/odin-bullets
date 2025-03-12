@@ -48,17 +48,14 @@ update_bullets :: proc() {
 					{start_origin_end_vector.y, -start_origin_end_vector.x},
 				) // start--->end, ^ rh_normal
 				// check if bullet is on right or left side
-				right_side: bool
 				normal: rl.Vector2
 				displacement := rl.Vector2DotProduct(
 					start_origin_bullet_vector,
 					right_handed_wall_normal,
 				)
-				if displacement > 0 {
-					right_side = true
+				if displacement > 0 { 	//right side
 					normal = right_handed_wall_normal
-				} else {
-					right_side = false
+				} else { 	// left side
 					normal = -1 * right_handed_wall_normal
 				}
 				bullet.velocity -= 2 * rl.Vector2DotProduct(bullet.velocity, normal) * normal
