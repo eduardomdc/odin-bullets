@@ -4,6 +4,12 @@ import rl "vendor:raylib"
 
 draw_game :: proc() {
 	rl.BeginDrawing()
-	rl.DrawTexture(assets.bullet_texture, 50, 50, rl.WHITE)
+	rl.ClearBackground(rl.BLACK)
+	draw_bullets()
 	rl.EndDrawing()
+}
+
+update_game :: proc() {
+	update_spawners()
+	update_bullets()
 }
