@@ -83,7 +83,7 @@ update_bullets :: proc() {
 						end   = new_wall_end + collision_point,
 					}
 					append(&game_state.walls, new_wall)
-					unordered_remove(&game_state.bullets, bullet_index)
+				//unordered_remove(&game_state.bullets, bullet_index) this is not okay inside for loop
 				}
 			}
 		}
