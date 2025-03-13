@@ -48,7 +48,7 @@ parse_spawners :: proc(spawners_value: json.Value, state: ^State) {
 		switch bullet_type_str {
 		case "bouncer":
 			spawner.bullet_type = BulletType.bouncer
-		case "construct":
+		case "constructor":
 			spawner.bullet_type = BulletType.constructor
 		case "bulldozer":
 			spawner.bullet_type = BulletType.bulldozer

@@ -72,11 +72,20 @@ update_bullets :: proc() {
 
 draw_bullets :: proc() {
 	for bullet in game_state.bullets {
+		bullet_color: rl.Color
+		switch bullet.type {
+		case BulletType.bouncer:
+			bullet_color = rl.PINK
+		case BulletType.bulldozer:
+			bullet_color = rl.RED
+		case BulletType.constructor:
+			bullet_color = rl.GREEN
+		}
 		rl.DrawTexture(
 			assets.bullet_texture,
 			i32(bullet.position.x - bullet_radius),
 			i32(bullet.position.y - bullet_radius),
-			rl.WHITE,
+			bullet_color,
 		)
 	}
 }

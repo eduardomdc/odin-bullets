@@ -28,7 +28,7 @@ assets: Assets
 
 load_assets :: proc() {
 	assets = {
-		bullet_texture = rl.LoadTexture("assets/blue_fire15.png"),
+		bullet_texture = rl.LoadTexture("assets/ball.png"),
 	}
 }
 
