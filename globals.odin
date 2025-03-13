@@ -1,5 +1,6 @@
 package main
 
+import "core:mem"
 import rl "vendor:raylib"
 
 fps :: 120
@@ -29,4 +30,13 @@ load_assets :: proc() {
 	assets = {
 		bullet_texture = rl.LoadTexture("assets/blue_fire15.png"),
 	}
+}
+
+state_allocator: mem.Allocator
+arena: mem.Arena
+data: [1024 * 1024]byte
+
+init_state_allocator :: proc() {
+	mem.arena_init(&arena, data[:])
+	state_allocator = mem.arena_allocator(&arena)
 }

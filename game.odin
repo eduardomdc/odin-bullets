@@ -3,6 +3,7 @@ package main
 import "core:fmt"
 import "core:strings"
 import rl "vendor:raylib"
+import gl "vendor:raylib/rlgl"
 
 draw_game :: proc() {
 	rl.BeginDrawing()
@@ -46,8 +47,15 @@ draw_ui :: proc() {
 	}
 
 	if rl.GuiButton(load_button_rect, "#01#Load map") {
-		fmt.println("Load ", drop_down_selected)
+		load_map(drop_down_selected)
 	}
+}
+
+load_map :: proc(selected: i32) {
+	free_all(state_allocator)
+	game_state = new(State, state_allocator)
+	success := load_map_file(map_files[selected], game_state)
+	gl.SetLineWidth(game_state.wall_thickness)
 }
 
 update_game :: proc() {

@@ -6,7 +6,6 @@ import "core:mem"
 import "core:path/filepath"
 import "core:strings"
 import rl "vendor:raylib"
-import gl "vendor:raylib/rlgl"
 
 map_files: []string
 map_options_str: string
@@ -21,11 +20,13 @@ load_map_options :: proc() {
 }
 
 main :: proc() {
+	init_state_allocator()
+	context.allocator = state_allocator
+
 	when ODIN_DEBUG {
 		track: mem.Tracking_Allocator
-		mem.tracking_allocator_init(&track, context.allocator)
+		mem.tracking_allocator_init(&track, state_allocator)
 		context.allocator = mem.tracking_allocator(&track)
-
 		defer {
 			if len(track.allocation_map) > 0 {
 				fmt.eprintf("=== %v allocations not freed: ===\n", len(track.allocation_map))
@@ -39,24 +40,18 @@ main :: proc() {
 
 	load_map_options()
 
-	fmt.println(map_options_str)
-
 	rl.InitWindow(800, 600, "odin bullets")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(fps)
 
 	load_assets()
 
-	game_state = new(State, context.allocator)
-	defer free(game_state)
-
-	success := load_map_file("maps/example.json", game_state)
-
-	gl.SetLineWidth(game_state.wall_thickness)
+	game_state = new(State, state_allocator)
 
 	for !rl.WindowShouldClose() {
 		update_game()
 		draw_game()
 	}
+
 	return
 }
