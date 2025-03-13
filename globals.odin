@@ -17,7 +17,7 @@ State :: struct {
 	spawners:       [dynamic]Spawner,
 }
 
-game_state: State
+game_state: ^State
 
 Assets :: struct {
 	bullet_texture: rl.Texture2D,
