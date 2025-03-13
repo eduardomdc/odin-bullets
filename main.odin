@@ -22,21 +22,7 @@ load_map_options :: proc() {
 main :: proc() {
 	init_state_allocator()
 	context.allocator = state_allocator
-
-	when ODIN_DEBUG {
-		track: mem.Tracking_Allocator
-		mem.tracking_allocator_init(&track, state_allocator)
-		context.allocator = mem.tracking_allocator(&track)
-		defer {
-			if len(track.allocation_map) > 0 {
-				fmt.eprintf("=== %v allocations not freed: ===\n", len(track.allocation_map))
-				for _, entry in track.allocation_map {
-					fmt.eprintf("- %v bytes @ %v\n", entry.size, entry.location)
-				}
-			}
-			mem.tracking_allocator_destroy(&track)
-		}
-	}
+	defer free_all(state_allocator)
 
 	load_map_options()
 
@@ -47,6 +33,7 @@ main :: proc() {
 	load_assets()
 
 	game_state = new(State, state_allocator)
+	defer free_all(state_allocator)
 
 	for !rl.WindowShouldClose() {
 		update_game()

@@ -17,7 +17,7 @@
     {
       "x": 700,
       "y": 500,
-      "spawn_frequency": 5.0,
+      "spawn_frequency": 1.0,
       "velocity": 150,
       "bullet_type": "constructor"
     }

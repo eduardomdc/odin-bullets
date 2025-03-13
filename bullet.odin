@@ -15,7 +15,7 @@ Bullet :: struct {
 }
 
 update_bullets :: proc() {
-	for &bullet in game_state.bullets {
+	for &bullet, bullet_index in game_state.bullets {
 		//move
 		bullet.position = bullet.position + bullet.velocity * rl.GetFrameTime()
 		//check for collision with map boundary
@@ -38,7 +38,7 @@ update_bullets :: proc() {
 			continue
 		}
 		//check for collision with walls
-		for wall in game_state.walls {
+		for wall, index in game_state.walls {
 			colliding := rl.CheckCollisionCircleLine(
 				bullet.position,
 				bullet_radius,
@@ -65,6 +65,26 @@ update_bullets :: proc() {
 				bullet.velocity -= 2 * rl.Vector2DotProduct(bullet.velocity, normal) * normal
 				// displace bullet away from wall to stop secondary collisions
 				bullet.position += (bullet_radius - abs(displacement)) * normal
+
+				// now handle different bullet type behaviors
+				switch bullet.type {
+				case BulletType.bouncer:
+				case BulletType.bulldozer:
+					if (!wall.invulnerable) {
+						unordered_remove(&game_state.walls, index)
+					}
+				case BulletType.constructor:
+					collision_point := bullet.position - normal * bullet_radius
+					new_wall_end :=
+						100 * rl.Vector2Normalize({bullet.velocity.y, -bullet.velocity.x})
+
+					new_wall: Wall = {
+						start = collision_point,
+						end   = new_wall_end + collision_point,
+					}
+					append(&game_state.walls, new_wall)
+					unordered_remove(&game_state.bullets, bullet_index)
+				}
 			}
 		}
 	}
