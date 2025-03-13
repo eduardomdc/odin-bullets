@@ -22,16 +22,20 @@ update_bullets :: proc() {
 		if i32(bullet.position.x) + bullet_radius > game_state.map_width {
 			bullet.velocity.x *= -1
 			bullet.position.x = f32(game_state.map_width) - bullet_radius
+			continue
 		} else if i32(bullet.position.x) - bullet_radius < 0 {
 			bullet.velocity.x *= -1
 			bullet.position.x = bullet_radius
+			continue
 		}
 		if i32(bullet.position.y) + bullet_radius > game_state.map_height {
 			bullet.velocity.y *= -1
 			bullet.position.y = f32(game_state.map_height) - bullet_radius
+			continue
 		} else if i32(bullet.position.y) - bullet_radius < 0 {
 			bullet.velocity.y *= -1
 			bullet.position.y = bullet_radius
+			continue
 		}
 		//check for collision with walls
 		for wall in game_state.walls {

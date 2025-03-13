@@ -11,7 +11,7 @@ State :: struct {
 	map_width:      i32,
 	map_height:     i32,
 	wall_thickness: f32,
-	player_speed:   i32,
+	player_speed:   f32,
 	bullets:        [dynamic]Bullet,
 	walls:          [dynamic]Wall,
 	spawners:       [dynamic]Spawner,
