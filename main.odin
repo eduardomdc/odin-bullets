@@ -12,7 +12,7 @@ map_files: []string
 map_options_str: string
 
 load_map_options :: proc() {
-	map_files, _ = filepath.glob("maps/*.json", context.allocator)
+	map_files, _ = filepath.glob("maps/*.json", context.temp_allocator)
 	map_options_str = ""
 	for str in map_files {
 		slice: []string = {map_options_str, str, ";"}
