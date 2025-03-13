@@ -28,6 +28,9 @@ parse_walls :: proc(walls_value : json.Value, state: ^State){
             start={f32(wall_obj["x1"].(f64)),f32(wall_obj["y1"].(f64))},
             end={f32(wall_obj["x2"].(f64)),f32(wall_obj["y2"].(f64))}
         }
+        if "invulnerable" in wall_obj{
+            wall.invulnerable = wall_obj["invulnerable"].(bool)
+        }
         append(&state.walls, wall)
     }
 }
