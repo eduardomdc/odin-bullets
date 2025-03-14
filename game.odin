@@ -130,7 +130,23 @@ update_player :: proc(){
 				new_position += (player_radius-abs(displacement)) * normal
 			}
 		}
+		
+		if !player_dead {
+			for bullet in bullets {
+				colliding := rl.CheckCollisionCircles(player_position, player_radius, bullet.position, bullet_radius)
+				if colliding {
+					if !player_dead {
+						player_death()
+					}
+				}
+			}
+		}
 
 		player_position = new_position
 	}
+}
+
+player_death :: proc() {
+	game_state.player_dead = true
+	sw_stop(&game_state.player_time)
 }
