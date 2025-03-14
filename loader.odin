@@ -40,6 +40,7 @@ load_map_file :: proc(file_name: string, state: ^State) -> bool {
 	state.map_height = mapfile.map_height
 	state.map_width = mapfile.map_width
 	state.wall_thickness = mapfile.wall_thickness
+	state.player_speed = mapfile.player_speed
 	parse_walls(mapfile.walls, state)
 	parse_spawners(mapfile.bullet_spawners, state)
 	return true
