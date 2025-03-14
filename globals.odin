@@ -9,6 +9,8 @@ bullet_radius :: 15
 
 player_radius :: 15
 
+wall_length :: 100
+
 State :: struct {
 	player_position:	rl.Vector2,
 	player_time:	StopWatch,

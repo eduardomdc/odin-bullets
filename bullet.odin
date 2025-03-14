@@ -80,12 +80,12 @@ update_bullets :: proc() {
 					continue bullet_loop
 				case BulletType.constructor:
 					collision_point := bullet.position - normal * bullet_radius
-					new_wall_end :=
-						100 * rl.Vector2Normalize({bullet.velocity.x, bullet.velocity.y})
+					perpendicular_to_velocity := rl.Vector2Normalize({bullet.velocity.y, -bullet.velocity.x})
+					new_wall_end := wall_length/2 * (perpendicular_to_velocity+collision_point)
 
 					new_wall: Wall = {
-						start = collision_point,
-						end   = new_wall_end + collision_point,
+						start = collision_point +(wall_length/2 * perpendicular_to_velocity),
+						end   = collision_point - (wall_length/2 * perpendicular_to_velocity),
 					}
 					append(&game_state.walls, new_wall)
 					unordered_remove(&game_state.bullets, bullet_index)
