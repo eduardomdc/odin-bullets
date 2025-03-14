@@ -75,6 +75,7 @@ update_bullets :: proc() {
 					if (!wall.invulnerable) {
 						context.allocator = state_allocator
 						unordered_remove(&game_state.walls, index)
+						unordered_remove(&game_state.bullets, bullet_index)
 					}
 					continue bullet_loop
 				case BulletType.constructor:
@@ -86,11 +87,10 @@ update_bullets :: proc() {
 						start = collision_point,
 						end   = new_wall_end + collision_point,
 					}
-					fmt.println(bullet_index,"Hit wall", index)
 					context.allocator = state_allocator
 					append(&game_state.walls, new_wall)
+					unordered_remove(&game_state.bullets, bullet_index)
 					continue bullet_loop
-				//unordered_remove(&game_state.bullets, bullet_index) this is not okay inside for loop
 				}
 			}
 		}
