@@ -21,7 +21,6 @@ load_map_options :: proc() {
 
 main :: proc() {
 	init_state_allocator()
-	context.allocator = state_allocator
 	defer free_all(state_allocator)
 
 	load_map_options()
@@ -33,7 +32,6 @@ main :: proc() {
 	load_assets()
 
 	game_state = new(State, state_allocator)
-	defer free_all(state_allocator)
 
 	for !rl.WindowShouldClose() {
 		update_game()

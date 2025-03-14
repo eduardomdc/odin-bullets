@@ -32,6 +32,7 @@ parse_walls :: proc(walls_value: json.Value, state: ^State) {
 		if "invulnerable" in wall_obj {
 			wall.invulnerable = wall_obj["invulnerable"].(bool)
 		}
+		context.allocator = state_allocator
 		append(&state.walls, wall)
 	}
 }
@@ -54,6 +55,7 @@ parse_spawners :: proc(spawners_value: json.Value, state: ^State) {
 			spawner.bullet_type = BulletType.bulldozer
 		}
 		spawner.timer = create_timer(f32(spawner_obj["spawn_frequency"].(f64)))
+		context.allocator = state_allocator
 		append(&state.spawners, spawner)
 	}
 }

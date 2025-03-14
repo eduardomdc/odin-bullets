@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import rl "vendor:raylib"
 
 BulletType :: enum {
@@ -15,7 +16,7 @@ Bullet :: struct {
 }
 
 update_bullets :: proc() {
-	for &bullet, bullet_index in game_state.bullets {
+	bullet_loop: for &bullet, bullet_index in game_state.bullets {
 		//move
 		bullet.position = bullet.position + bullet.velocity * rl.GetFrameTime()
 		//check for collision with map boundary
@@ -69,10 +70,13 @@ update_bullets :: proc() {
 				// now handle different bullet type behaviors
 				switch bullet.type {
 				case BulletType.bouncer:
+					continue bullet_loop
 				case BulletType.bulldozer:
 					if (!wall.invulnerable) {
+						context.allocator = state_allocator
 						unordered_remove(&game_state.walls, index)
 					}
+					continue bullet_loop
 				case BulletType.constructor:
 					collision_point := bullet.position - normal * bullet_radius
 					new_wall_end :=
@@ -82,7 +86,10 @@ update_bullets :: proc() {
 						start = collision_point,
 						end   = new_wall_end + collision_point,
 					}
+					fmt.println(bullet_index,"Hit wall", index)
+					context.allocator = state_allocator
 					append(&game_state.walls, new_wall)
+					continue bullet_loop
 				//unordered_remove(&game_state.bullets, bullet_index) this is not okay inside for loop
 				}
 			}
