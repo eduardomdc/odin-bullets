@@ -12,21 +12,21 @@
       "y": 300,
       "spawn_frequency": 1.0,
       "velocity": 200,
-      "bullet_type": 2
+      "bullet_type": "bulldozer"
     },
     {
       "x": 700,
       "y": 500,
       "spawn_frequency": 1.0,
       "velocity": 150,
-      "bullet_type": 1
+      "bullet_type": "constructor"
     },
     {
       "x": 100,
       "y": 100,
       "spawn_frequency": 1.0,
       "velocity": 350,
-      "bullet_type": 0
+      "bullet_type": "bouncer"
     }
   ]
 }
