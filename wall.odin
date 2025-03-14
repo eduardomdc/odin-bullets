@@ -10,6 +10,6 @@ Wall :: struct {
 
 draw_walls :: proc() {
 	for wall in game_state.walls {
-		rl.DrawLineV(wall.start, wall.end, rl.GOLD)
+		rl.DrawLineV(wall.start, wall.end, rl.WHITE)
 	}
 }

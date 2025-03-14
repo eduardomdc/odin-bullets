@@ -8,6 +8,7 @@ import gl "vendor:raylib/rlgl"
 draw_game :: proc() {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.BLACK)
+	rl.DrawTexture(assets.background_texture, 0, 0, rl.BLUE)
 	draw_bullets()
 	draw_walls()
 	draw_player()
@@ -73,11 +74,12 @@ update_game :: proc() {
 }
 
 draw_player :: proc() {
+	player_color := rl.RED if game_state.player_dead else rl.WHITE
 	rl.DrawTexture(
 		assets.player_texture,
 		i32(game_state.player_position.x - player_radius),
 		i32(game_state.player_position.y - player_radius),
-		rl.WHITE,
+		player_color,
 	)
 }
 
@@ -89,5 +91,46 @@ update_player :: proc(){
 	if rl.IsKeyDown(rl.KeyboardKey.RIGHT) {input_dir.x += 1}
 	input_dir = rl.Vector2Normalize(input_dir)
 
-	game_state.player_position += game_state.player_speed * input_dir * rl.GetFrameTime()
+	using game_state; {
+		move : rl.Vector2 = player_speed * input_dir * rl.GetFrameTime()
+
+		new_position : rl.Vector2 = player_position + move
+
+		if i32(new_position.x) + player_radius > map_width {
+			new_position.x = f32(map_width) - player_radius
+		} else if i32(new_position.x) - player_radius < 0 {
+			new_position.x = player_radius
+		}
+		if i32(new_position.y) + player_radius > map_height {
+			new_position.y = f32(map_height) - player_radius
+		} else if i32(new_position.y) - player_radius < 0 {
+			new_position.y = player_radius
+		}
+
+		for wall in walls {
+			colliding := rl.CheckCollisionCircleLine(player_position, player_radius, wall.start, wall.end)
+			if colliding {
+				// repeated code from bullet.odin -> future function for returning normal
+				start_origin_end_vector := wall.end - wall.start
+				start_origin_bullet_vector := player_position - wall.start
+				right_handed_wall_normal := rl.Vector2Normalize(
+					{start_origin_end_vector.y, -start_origin_end_vector.x},
+				) // start--->end, ^ rh_normal
+				// check if player is on right or left side
+				normal: rl.Vector2
+				displacement := rl.Vector2DotProduct(
+					start_origin_bullet_vector,
+					right_handed_wall_normal,
+				)
+				if displacement > 0 { 	//right side
+					normal = right_handed_wall_normal
+				} else { 	// left side
+					normal = -1 * right_handed_wall_normal
+				}
+				new_position += (player_radius-abs(displacement)) * normal
+			}
+		}
+
+		player_position = new_position
+	}
 }

@@ -16,6 +16,7 @@ State :: struct {
 	map_height:     	i32,
 	wall_thickness: 	f32,
 	player_speed:   	f32,
+	player_dead:		bool,
 	bullets:        	[dynamic]Bullet,
 	walls:          	[dynamic]Wall,
 	spawners:       	[dynamic]Spawner,
@@ -26,6 +27,7 @@ game_state: ^State
 Assets :: struct {
 	bullet_texture: rl.Texture2D,
 	player_texture:	rl.Texture2D,
+	background_texture: rl.Texture2D,
 }
 
 assets: Assets
@@ -34,6 +36,7 @@ load_assets :: proc() {
 	assets = {
 		bullet_texture = rl.LoadTexture("assets/ball.png"),
 		player_texture = rl.LoadTexture("assets/player.png"),
+		background_texture = rl.LoadTexture("assets/background.png")
 	}
 }
 
