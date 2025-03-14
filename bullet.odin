@@ -16,6 +16,7 @@ Bullet :: struct {
 }
 
 update_bullets :: proc() {
+	context.allocator = state_allocator
 	bullet_loop: for &bullet, bullet_index in game_state.bullets {
 		//move
 		bullet.position = bullet.position + bullet.velocity * rl.GetFrameTime()
@@ -73,7 +74,6 @@ update_bullets :: proc() {
 					continue bullet_loop
 				case BulletType.bulldozer:
 					if (!wall.invulnerable) {
-						context.allocator = state_allocator
 						unordered_remove(&game_state.walls, index)
 						unordered_remove(&game_state.bullets, bullet_index)
 					}
@@ -81,13 +81,12 @@ update_bullets :: proc() {
 				case BulletType.constructor:
 					collision_point := bullet.position - normal * bullet_radius
 					new_wall_end :=
-						100 * rl.Vector2Normalize({bullet.velocity.y, -bullet.velocity.x})
+						100 * rl.Vector2Normalize({bullet.velocity.x, bullet.velocity.y})
 
 					new_wall: Wall = {
 						start = collision_point,
 						end   = new_wall_end + collision_point,
 					}
-					context.allocator = state_allocator
 					append(&game_state.walls, new_wall)
 					unordered_remove(&game_state.bullets, bullet_index)
 					continue bullet_loop

@@ -4,58 +4,68 @@ import "core:encoding/json"
 import "core:fmt"
 import "core:os"
 
+MapFileWall :: struct {
+	x1 : f32,
+	y1 : f32,
+	x2 : f32,
+	y2 : f32,
+	invulnerable : bool
+}
+
+MapFileBulletSpawner :: struct {
+	x : f32,
+	y : f32,
+	spawn_frequency : f32,
+	velocity : f32,
+	bullet_type : BulletType,
+}
+
+MapFile :: struct {
+	map_width : i32,
+	map_height : i32,
+	wall_thickness : f32,
+	player_speed : f32,
+	walls : []MapFileWall,
+	bullet_spawners : []MapFileBulletSpawner,
+}
+
 load_map_file :: proc(file_name: string, state: ^State) -> bool {
 	file, success := os.read_entire_file_from_filename(file_name, context.temp_allocator)
 	if !success {
 		fmt.println("Couldn't read map file ", file_name)
 		return false
 	}
-	parsed, good := json.parse(file, allocator = context.temp_allocator)
-	data_object: json.Object = parsed.(json.Object)
-	state.map_width = i32(data_object["map_width"].(f64))
-	state.map_height = i32(data_object["map_height"].(f64))
-	state.wall_thickness = f32(data_object["wall_thickness"].(f64))
-	state.player_speed = f32(data_object["player_speed"].(f64))
-	parse_walls(data_object["walls"], state)
-	parse_spawners(data_object["bullet_spawners"], state)
+	mapfile : MapFile
+	json.unmarshal(file, &mapfile, allocator=context.temp_allocator)
+	state.map_height = mapfile.map_height
+	state.map_width = mapfile.map_width
+	state.wall_thickness = mapfile.wall_thickness
+	parse_walls(mapfile.walls, state)
+	parse_spawners(mapfile.bullet_spawners, state)
 	return true
 }
 
-parse_walls :: proc(walls_value: json.Value, state: ^State) {
-	walls_array := walls_value.(json.Array)
-	for wall_v in walls_array {
-		wall_obj := wall_v.(json.Object)
+parse_walls :: proc(walls_file: []MapFileWall, state: ^State) {
+	context.allocator = state_allocator
+	for wall_file in walls_file {
 		wall: Wall = {
-			start = {f32(wall_obj["x1"].(f64)), f32(wall_obj["y1"].(f64))},
-			end   = {f32(wall_obj["x2"].(f64)), f32(wall_obj["y2"].(f64))},
+			start = {wall_file.x1, wall_file.y1},
+			end   = {wall_file.x2, wall_file.y2},
+			invulnerable = wall_file.invulnerable
 		}
-		if "invulnerable" in wall_obj {
-			wall.invulnerable = wall_obj["invulnerable"].(bool)
-		}
-		context.allocator = state_allocator
 		append(&state.walls, wall)
 	}
 }
 
-parse_spawners :: proc(spawners_value: json.Value, state: ^State) {
-	spawners_array := spawners_value.(json.Array)
-	for spawner_v in spawners_array {
-		spawner_obj := spawner_v.(json.Object)
+parse_spawners :: proc(spawners_file: []MapFileBulletSpawner, state: ^State) {
+	context.allocator = state_allocator
+	for spawner_file in spawners_file {
 		spawner: Spawner = {
-			position = {f32(spawner_obj["x"].(f64)), f32(spawner_obj["y"].(f64))},
-			velocity = f32(spawner_obj["velocity"].(f64)),
+			position = {spawner_file.x, spawner_file.y},
+			velocity = spawner_file.velocity,
+			bullet_type = spawner_file.bullet_type,
+			timer = create_timer(spawner_file.spawn_frequency)
 		}
-		bullet_type_str := spawner_obj["bullet_type"].(string)
-		switch bullet_type_str {
-		case "bouncer":
-			spawner.bullet_type = BulletType.bouncer
-		case "constructor":
-			spawner.bullet_type = BulletType.constructor
-		case "bulldozer":
-			spawner.bullet_type = BulletType.bulldozer
-		}
-		spawner.timer = create_timer(f32(spawner_obj["spawn_frequency"].(f64)))
-		context.allocator = state_allocator
 		append(&state.spawners, spawner)
 	}
 }
